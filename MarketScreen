@@ -1,0 +1,105 @@
+package com.tecwallet.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.tecwallet.domain.model.CoinPrice
+
+@Composable
+fun MarketScreen() {
+    val marketRepository = remember { MarketRepository() }
+    var prices by remember { mutableStateOf<List<CoinPrice>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        prices = marketRepository.getMarketPrices()
+        isLoading = false
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Market Prices") },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            )
+        }
+    ) { paddingValues ->
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+            ) {
+                items(prices) { coin ->
+                    MarketItem(coin = coin)
+                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MarketItem(coin: CoinPrice) {
+    val priceChangeColor = if (coin.changePercent.contains("+")) Color.Green else Color.Red
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = coin.symbol,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "$${coin.price}",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = coin.changePercent,
+                    color = priceChangeColor,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "24h Vol: $${coin.volume}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+}
+
+// 数据模型
+package com.tecwallet.domain.model
+
+data class CoinPrice(
+    val symbol: String,
+    val price: Double,
+    val volume: Double,
+    val changePercent: String
+)
