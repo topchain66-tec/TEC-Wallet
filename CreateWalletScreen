@@ -1,0 +1,62 @@
+package com.tecwallet.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun CreateWalletScreen(onWalletCreated: (String) -> Unit) {
+    var mnemonic by remember { mutableStateOf(generateMockMnemonic()) }
+    var isSaved by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Create New Wallet", style = MaterialTheme.typography.headlineMedium)
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Backup Mnemonic Phrase", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = mnemonic,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        if (!isSaved) {
+            Button(
+                onClick = { isSaved = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("I have backed up the phrase")
+            }
+        } else {
+            Button(
+                onClick = { onWalletCreated("TEC1" + (1..40).map { "x" }.joinToString("")) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Continue to Wallet")
+            }
+        }
+    }
+}
+
+private fun generateMockMnemonic(): String {
+    val words = listOf("apple", "banana", "cat", "dog", "elephant", "fox", "grape", "house", "ice", "jungle")
+    return (1..12).map { words.random() }.joinToString(" ")
+}
