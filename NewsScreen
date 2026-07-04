@@ -92,7 +92,7 @@ fun NewsCard(news: NewsItem) {
     }
 }
 
-// 数据模型（如果还没创建）
+
 package com.tecwallet.domain.model
 
 data class NewsItem(
