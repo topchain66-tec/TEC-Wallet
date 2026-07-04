@@ -1,0 +1,50 @@
+package com.tecwallet.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import androidx.navigation.compose.*
+
+@Composable
+fun MainApp() {
+    val navController = rememberNavController()
+
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController) }
+    ) { padding ->
+        NavHost(navController = navController, startDestination = "home", modifier = Modifier.padding(padding)) {
+            composable("home") { HomeScreen() }
+            composable("send") { SendTECScreen(onTransactionSent = { /* show success */ }) }
+            composable("create") { CreateWalletScreen(onWalletCreated = { /* navigate */ }) }
+            composable("market") { MarketScreen() }
+        }
+    }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    NavigationBar {
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Home, null) },
+            label = { Text("Wallet") },
+            selected = true,
+            onClick = { navController.navigate("home") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Send, null) },
+            label = { Text("Send") },
+            selected = false,
+            onClick = { navController.navigate("send") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.TrendingUp, null) },
+            label = { Text("Market") },
+            selected = false,
+            onClick = { navController.navigate("market") }
+        )
+    }
+}
